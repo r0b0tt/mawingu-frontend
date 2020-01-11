@@ -12,7 +12,7 @@ class Dashboard extends Component {
                 'Completed'
             ],
             datasets: [{
-                data: [10, 30],
+                data: [30, 10],
                 backgroundColor: [
                     '#FF6384',
                     '#FFCE56',
@@ -202,8 +202,8 @@ class Dashboard extends Component {
                                                     <td><span className="label label-primary">Assigned</span></td>
                                                     <td>20th Jun 2019 09:22 am</td>
                                                     <td>
-                                                        <form action="#"
-                                                            onSubmit="return confirm('Are you sure you want to select moses kinyua?')"
+                                                        <form
+                                                            onSubmit={e => window.confirm("Are you sure you want to select moses kinyua?")}
                                                             method="post" acceptCharset="utf-8">
                                                             <input type="hidden" name="task_id" value="21963" /><input type="hidden"
                                                                 name="task_status_id" value="2" />
@@ -350,7 +350,6 @@ class Dashboard extends Component {
                             <div className="card">
                                 <div className="card-body">
                                     <h5 className="card-title">Daily Target</h5>
-                                    {/* <canvas id="myChart" width="100%"></canvas> */}
 
                                     <Pie data={data} />
                                     <div className="row task-status mt-5">
