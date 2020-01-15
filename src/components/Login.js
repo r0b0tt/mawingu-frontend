@@ -1,6 +1,6 @@
 import { faLock, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import MawinguLogo from '../assets/img/mawingu.png';
 import { loginUser } from '../redux/actions/index';
