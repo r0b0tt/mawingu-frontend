@@ -1,2 +1,2 @@
 // API BASE URL
-export const BASE_URL = "https://kazi.azurewebsites.net"
+export const BASE_API_URL = "http://127.0.0.1:5000"

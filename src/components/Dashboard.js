@@ -3,8 +3,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component, Fragment } from 'react';
 import NavBar from './shared/NavBar';
 import { Pie } from 'react-chartjs-2';
+import { connect } from 'react-redux';
+import { fetchTasks } from '../redux/actions/index';
 
 class Dashboard extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {}
+    }
+
+    componentDidMount = () => {
+        this.props.fetchTasks()
+    }
     render() {
         const data = {
             labels: [
@@ -48,277 +58,173 @@ class Dashboard extends Component {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Nancy</td>
-                                                    <td>Mwangi</td>
-                                                    <td>+254727337353</td>
-                                                    <td>Self</td>
-                                                    <td><span className="badge badge-warning">In Progress</span></td>
-                                                    <td>20th Jun 2019 09:22 am</td>
-                                                    <td>
-                                                        <button type="button" className="btn btn-success btn-sm" data-toggle="modal"
-                                                            data-target="#updateModal">
-                                                            Update
+                                                {
+                                                    this.props.tasks && this.props.tasks.data && this.props.tasks.data.tasks.map((task, index) =>
+                                                        <tr key={task.task_id}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{task.customer_first_name}</td>
+                                                            <td>{task.customer_last_name}</td>
+                                                            <td>{task.customer_username}</td>
+                                                            <td>Self</td>
+                                                            <td><span className={`badge ${task.task_status_name === "Completed" ? "badge-success"
+                                                                : task.task_status_name === "In Progress" ? "badge-warning"
+                                                                    : task.task_status_name === "Assigned" ? "badge-info" : "badge-danger"}`}
+                                                            >
+                                                                {task.task_status_name}
+                                                            </span>
+                                                            </td>
+                                                            <td>{new Date(task.created).toDateString()} {new Date(task.created).toLocaleTimeString()}</td>
+                                                            <td>
+                                                                <button type="button" className="btn btn-success btn-sm" data-toggle="modal"
+                                                                    data-target="#updateModal">
+                                                                    Update
                                             </button>
-                                                        <div className="modal fade" id="updateModal" tabIndex="-1" role="dialog"
-                                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                            <div className="modal-dialog" role="document">
-                                                                <div className="modal-content">
-                                                                    <div className="modal-header">
-                                                                        <h5 className="modal-title" id="exampleModalLabel">Update Nancy
-                                                                            Mwangi
-                                                            </h5>
-                                                                        <button type="button" className="close" data-dismiss="modal"
-                                                                            aria-label="Close">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    <form action="#" method="post">
-                                                                        <input type="hidden" name="task_id" value="21962" />
-                                                                        <input type="hidden" name="task_status_id" value="3" />
-                                                                        <div className="modal-body">
-                                                                            <p><strong>Customer Phone:</strong> +254382742637</p>
-                                                                            <label>Gender</label>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="radio"
-                                                                                    name="gender" id="gender1" value="Male" />
-                                                                                <label className="form-check-label" htmlFor="gender1">
-                                                                                    Male
+                                                                <div className="modal fade" id="updateModal" tabIndex="-1" role="dialog"
+                                                                    aria-labelledby="updateModalLabel" aria-hidden="true">
+                                                                    <div className="modal-dialog" role="document">
+                                                                        <div className="modal-content">
+                                                                            <div className="modal-header">
+                                                                                <h5 className="modal-title" id="updateModalLabel">Update {`${task.customer_first_name} ${task.customer_last_name}`}
+                                                                                </h5>
+                                                                                <button type="button" className="close" data-dismiss="modal"
+                                                                                    aria-label="Close">
+                                                                                    <span aria-hidden="true">&times;</span>
+                                                                                </button>
+                                                                            </div>
+                                                                            <form action="#" method="post" onSubmit={e => { e.preventDefault(); alert(`Updated ${task.customer_first_name} ${task.customer_last_name}`) }}>
+                                                                                <input type="hidden" name="task_id" value="21962" />
+                                                                                <input type="hidden" name="task_status_id" value="3" />
+                                                                                <div className="modal-body">
+                                                                                    <p><strong>Customer Phone:</strong> {task.customer_username}</p>
+                                                                                    <label>Gender</label>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="radio"
+                                                                                            name="gender" id="gender1" value="Male" />
+                                                                                        <label className="form-check-label" htmlFor="gender1">
+                                                                                            Male
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="radio"
-                                                                                    name="gender" id="gender2" value="option2" />
-                                                                                <label className="form-check-label" htmlFor="gender2">
-                                                                                    Female
+                                                                                    </div>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="radio"
+                                                                                            name="gender" id="gender2" value="option2" />
+                                                                                        <label className="form-check-label" htmlFor="gender2">
+                                                                                            Female
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-group">
-                                                                                <label htmlFor="location">Location</label>
-                                                                                <input type="text" className="form-control"
-                                                                                    name="location" id="location"
-                                                                                    placeholder="Location" />
-                                                                            </div>
-                                                                            <div className="form-group">
-                                                                                <label htmlFor="age">Age</label>
-                                                                                <input type="number" className="form-control" name="age"
-                                                                                    id="age" placeholder="Age" />
-                                                                            </div>
-                                                                            <label>Customer Education</label>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="checkbox"
-                                                                                    value="1" name="access_code" id="access_code1" />
-                                                                                <label className="form-check-label" htmlFor="access_code1">
-                                                                                    Access Code
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="location">Location</label>
+                                                                                        <input type="text" className="form-control"
+                                                                                            name="location" id="location"
+                                                                                            placeholder="Location" />
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="age">Age</label>
+                                                                                        <input type="number" className="form-control" name="age"
+                                                                                            id="age" placeholder="Age" />
+                                                                                    </div>
+                                                                                    <label>Customer Education</label>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="checkbox"
+                                                                                            value="1" name="access_code" id="access_code1" />
+                                                                                        <label className="form-check-label" htmlFor="access_code1">
+                                                                                            Access Code
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="checkbox"
-                                                                                    value="1" name="splash_page" id="splash_page1" />
-                                                                                <label className="form-check-label" htmlFor="splash_page1">
-                                                                                    Splash Page
+                                                                                    </div>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="checkbox"
+                                                                                            value="1" name="splash_page" id="splash_page1" />
+                                                                                        <label className="form-check-label" htmlFor="splash_page1">
+                                                                                            Splash Page
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="checkbox"
-                                                                                    value="1" name="autoplay" id="autoplay1" />
-                                                                                <label className="form-check-label" htmlFor="autoplay1">
-                                                                                    Turn off autoplay
+                                                                                    </div>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="checkbox"
+                                                                                            value="1" name="autoplay" id="autoplay1" />
+                                                                                        <label className="form-check-label" htmlFor="autoplay1">
+                                                                                            Turn off autoplay
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-check">
-                                                                                <input className="form-check-input" type="checkbox"
-                                                                                    value="1" name="mpesa" id="mpesa1" />
-                                                                                <label className="form-check-label" htmlFor="mpesa1">
-                                                                                    M-Pesa training
+                                                                                    </div>
+                                                                                    <div className="form-check">
+                                                                                        <input className="form-check-input" type="checkbox"
+                                                                                            value="1" name="mpesa" id="mpesa1" />
+                                                                                        <label className="form-check-label" htmlFor="mpesa1">
+                                                                                            M-Pesa training
                                                                     </label>
-                                                                            </div>
-                                                                            <div className="form-group">
-                                                                                <label htmlFor="comments">Comments</label>
-                                                                                <textarea className="form-control" name="comments"
-                                                                                    id="comments" rows="3"></textarea>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="modal-footer">
-                                                                            <button type="button" className="btn btn-secondary"
-                                                                                data-dismiss="modal">Close</button>
-                                                                            <button type="submit" className="btn btn-primary">Update
+                                                                                    </div>
+                                                                                    <div className="form-group">
+                                                                                        <label htmlFor="comments">Comments</label>
+                                                                                        <textarea className="form-control" name="comments"
+                                                                                            id="comments" rows="3"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="modal-footer">
+                                                                                    <button type="button" className="btn btn-secondary"
+                                                                                        data-dismiss="modal">Close</button>
+                                                                                    <button type="submit" className="btn btn-primary">Update
                                                                     Customer</button>
+                                                                                </div>
+                                                                            </form>
                                                                         </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" className="btn btn-danger btn-sm" data-toggle="modal"
-                                                            data-target="#deferModal">
-                                                            Defer
-                                            </button>
-                                                        <div className="modal fade" id="deferModal" tabIndex="-1" role="dialog"
-                                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                            <div className="modal-dialog" role="document">
-                                                                <div className="modal-content">
-                                                                    <div className="modal-header">
-                                                                        <h5 className="modal-title" id="exampleModalLabel">Defer Nancy
-                                                                            Mwangi
-                                                            </h5>
-                                                                        <button type="button" className="close" data-dismiss="modal"
-                                                                            aria-label="Close">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
                                                                     </div>
-                                                                    <form action="#" method="post">
-                                                                        <input type="hidden" name="task_id" value="21962" />
-                                                                        <input type="hidden" name="task_status_id" value="4" />
-                                                                        <div className="modal-body">
-                                                                            <p><strong>Customer Phone:</strong> +254382742637</p>
-                                                                            <div className="form-group">
-                                                                                <label htmlFor="comments">Comments</label>
-                                                                                <textarea className="form-control" name="comments"
-                                                                                    id="comments" rows="3"></textarea>
+                                                                </div>
+                                                            </td>
+
+                                                            {
+                                                                task.task_status_name !== "Deferred" &&
+                                                                <td>
+                                                                    <button type="button" className="btn btn-danger btn-sm" data-toggle="modal"
+                                                                        data-target="#deferModal">
+                                                                        Defer
+                                                                </button>
+                                                                    <div className="modal fade" id="deferModal" tabIndex="-1" role="dialog"
+                                                                        aria-labelledby="deferModalLabel" aria-hidden="true">
+                                                                        <div className="modal-dialog" role="document">
+                                                                            <div className="modal-content">
+                                                                                <div className="modal-header">
+                                                                                    <h5 className="modal-title" id="deferModalLabel">Defer {`${task.customer_first_name} ${task.customer_last_name}`}
+                                                                                    </h5>
+                                                                                    <button type="button" className="close" data-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <form action="#" method="post" onSubmit={e => { e.preventDefault(); alert(`Deferred ${task.customer_first_name} ${task.customer_last_name}`) }}>
+                                                                                    <input type="hidden" name="task_id" value="21962" />
+                                                                                    <input type="hidden" name="task_status_id" value="4" />
+                                                                                    <div className="modal-body">
+                                                                                        <p><strong>Customer Phone:</strong> {task.customer_username}</p>
+                                                                                        <div className="form-group">
+                                                                                            <label htmlFor="comments">Comments</label>
+                                                                                            <textarea className="form-control" name="comments"
+                                                                                                id="comments" rows="3"></textarea>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="modal-footer">
+                                                                                        <button type="button" className="btn btn-secondary"
+                                                                                            data-dismiss="modal">Close</button>
+                                                                                        <button type="submit" className="btn btn-danger">Defer
+                                                                    Customer</button>
+                                                                                    </div>
+                                                                                </form>
                                                                             </div>
                                                                         </div>
-                                                                        <div className="modal-footer">
-                                                                            <button type="button" className="btn btn-secondary"
-                                                                                data-dismiss="modal">Close</button>
-                                                                            <button type="submit" className="btn btn-danger">Defer
-                                                                    Customer</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                                    </div>
+                                                                </td>
 
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>moses</td>
-                                                    <td>kinyua</td>
-                                                    <td>+254796893219</td>
-                                                    <td>Self</td>
-                                                    <td><span className="label label-primary">Assigned</span></td>
-                                                    <td>20th Jun 2019 09:22 am</td>
-                                                    <td>
-                                                        <form
-                                                            onSubmit={e => window.confirm("Are you sure you want to select moses kinyua?")}
-                                                            method="post" acceptCharset="utf-8">
-                                                            <input type="hidden" name="task_id" value="21963" /><input type="hidden"
-                                                                name="task_status_id" value="2" />
-                                                            <button type="submit" className="btn btn-warning btn-sm">Select</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
+                                                            }
 
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Caroline</td>
-                                                    <td>Mukami</td>
-                                                    <td>+254797677910</td>
-                                                    <td>Merchant</td>
-                                                    <td><span className="badge badge-danger">Deferred</span></td>
-                                                    <td>12th Mar 2019 12:27 pm</td>
-                                                    <td>
-                                                        <form action="#"
-                                                            onSubmit="return confirm('Are you sure you want to put this customer back to In Progress?')"
-                                                            method="post" acceptCharset="utf-8">
-                                                            <input type="hidden" name="task_id" value="4600" /><input type="hidden"
-                                                                name="task_status_id" value="2" />
-                                                            <button type="submit" className="btn btn-warning btn-sm">Select</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td>Boniface</td>
-                                                    <td>Ntwiga</td>
-                                                    <td>+254720721458</td>
-                                                    <td>Self</td>
-                                                    <td><span className="badge badge-success">Completed</span></td>
-                                                    <td>12th Mar 2019 12:19 pm</td>
-                                                    <td>
-                                                        <a href="javascript:void(0)" className="btn btn-sm btn-primary"
-                                                            data-toggle="modal" data-target="#view_customer4596">View</a>
-                                                        <div id="view_customer4596" className="modal fade" tabIndex="-1" role="dialog"
-                                                            aria-labelledby="myModalLabel" aria-hidden="true">
-                                                            <div className="modal-dialog">
-                                                                <div className="modal-content">
-                                                                    <div className="modal-header">
-                                                                        <h5 className="modal-title" id="exampleModalLabel">View
-                                                                            Boniface
-                                                                            Ntwiga
-                                                            </h5>
-                                                                        <button type="button" className="close" data-dismiss="modal"
-                                                                            aria-label="Close">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    <div className="modal-body">
-                                                                        <table
-                                                                            className="table table-condensed table-hover table-stiped table-bordered">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <th>Gender</th>
-                                                                                    <td>Male</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Location</th>
-                                                                                    <td>Meru</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Age</th>
-                                                                                    <td>41</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Access Code</th>
-                                                                                    <td><span
-                                                                                        className="label label-success">Completed</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Splash Page</th>
-                                                                                    <td><span
-                                                                                        className="label label-success">Completed</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Turn off Autoplay</th>
-                                                                                    <td><span
-                                                                                        className="label label-success">Completed</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>M-Pesa Training</th>
-                                                                                    <td><span
-                                                                                        className="label label-success">Completed</span>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Comments</th>
-                                                                                    <td></td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Updated By</th>
-                                                                                    <td>Ann Njoki</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <th>Updated On</th>
-                                                                                    <td>14th Mar 2019 16:33 pm</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                    <div className="modal-footer">
-                                                                        <button type="button" className="btn btn-default"
-                                                                            data-dismiss="modal">Close</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                            <td>
+                                                                <form
+                                                                    onSubmit={e => { e.preventDefault(); window.confirm(`Are you sure you want to select ${task.customer_first_name} ${task.customer_last_name}?`) }}
+                                                                    method="post" acceptCharset="utf-8">
+                                                                    <input type="hidden" name="task_id" value="21963" /><input type="hidden"
+                                                                        name="task_status_id" value="2" />
+                                                                    <button type="submit" className="btn btn-warning btn-sm">Select</button>
+                                                                </form>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                }
                                             </tbody>
                                         </table>
                                     </div>
@@ -419,9 +325,14 @@ class Dashboard extends Component {
                         </div>
                     </div>
                 </div>
-            </Fragment>
+            </Fragment >
         );
     }
 }
 
-export default Dashboard;
+const mapStateToProps = state => ({
+    user: state.user,
+    tasks: state.tasks
+})
+
+export default connect(mapStateToProps, { fetchTasks })(Dashboard);

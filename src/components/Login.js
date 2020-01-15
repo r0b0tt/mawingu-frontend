@@ -1,9 +1,12 @@
-import React, { Fragment, useState } from 'react';
-import MawinguLogo from '../assets/img/mawingu.png';
+import { faLock, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faPhone } from '@fortawesome/free-solid-svg-icons'
+import React, { Fragment, useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import MawinguLogo from '../assets/img/mawingu.png';
+import { loginUser } from '../redux/actions/index';
 
 const Login = (props) => {
+
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
 
@@ -29,11 +32,10 @@ const Login = (props) => {
             phone: phone,
             password: password
         };
-        console.log(data);
-        // TODO Submit data to api endpoint
-        props.history.push("/")
+        props.loginUser(data);
 
     }
+
 
     return (
         <Fragment>
@@ -45,6 +47,12 @@ const Login = (props) => {
                     </div>
                     <div className="login-body">
                         <form method="post" onSubmit={handleFormSubmit}>
+                            {
+                                props.authErrMessage &&
+                                <div className="alert alert-danger" role="alert">
+                                    Unable to Log you in. Please try again!
+                            </div>
+                            }
                             <div className="input-group mb-3">
                                 <div className="input-group-prepend">
                                     <span className="input-group-text"><FontAwesomeIcon icon={faPhone} /></span>
@@ -59,15 +67,10 @@ const Login = (props) => {
                                     <span className="input-group-text"><FontAwesomeIcon icon={faLock} /></span>
                                 </div>
                                 <input type="password"
-                                    className={password === "" ? "form-control is-invalid" : "form-control"} placeholder="Password"
+                                    className="form-control" placeholder="Password"
                                     name="password" onChange={handleInputChange} value={password}
                                     required />
-                                {
-                                    password === "" &&
-                                    <div className="invalid-feedback">
-                                        Password is required
-                                </div>
-                                }
+
                             </div>
                             <button type="submit" className="btn btn-primary">Login</button>
                         </form>
@@ -78,5 +81,10 @@ const Login = (props) => {
     )
 }
 
-export default Login;
+const mapStateToProps = state => ({
+    user: state.user,
+    authErrMessage: state.authErrMessage,
+})
+
+export default connect(mapStateToProps, { loginUser })(Login);
 
